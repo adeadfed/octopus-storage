@@ -1,0 +1,22 @@
+{
+  "name": "octopus-storage",
+  "version": "0.0.1",
+  "description": "Vulnerable AWS Cognito application",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adeadfed/octopus-storage.git"
+  },
+  "author": "@shabarkin @adeadfed",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adeadfed/octopus-storage/issues"
+  },
+  "homepage": "https://github.com/adeadfed/octopus-storage#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
