@@ -104,6 +104,7 @@ function logout() {
 }
 
 // set cred settings to request a token from AWS cognito identity pool
+// we have to pass a role_arn here in order to receive credentials for a different role!
 function getAWSCredentials() {
     var cognitoUser = window.userPool.getCurrentUser();
 
