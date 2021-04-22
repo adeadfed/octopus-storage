@@ -4,14 +4,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Login - Octopus Storage</title>
-
+    <title>Services - Octopus Storage</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
     <link rel="stylesheet" href="assets/fonts/simple-line-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
     <link rel="stylesheet" href="assets/css/vanilla-zoom.min.css">
-    
+
     <script src="assets/js/amazon-cognito-identity.js"></script>
     <script src="assets/js/aws-sdk.js"></script>
     <script src="assets/js/cognito-helper.js"></script>
@@ -20,8 +19,8 @@
 
 
 <script>
-    if (window.userPool.getCurrentUser() != null) {
-        window.location = '/';
+    if (window.userPool.getCurrentUser() == null) {
+        window.location = '/login.html';
     } 
 </script>
 
@@ -30,28 +29,33 @@
     <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
         <div class="container"><a class="navbar-brand logo" href="#">Octopus Storage</a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav ms-auto" id="header">
+                <ul class="navbar-nav ms-auto">
                     <script>set_header()</script>
                 </ul>
             </div>
         </div>
     </nav>
-
-
-    <main class="page login-page">
-        <section class="clean-block clean-form dark">
+    <main class="page service-page">
+        <section class="clean-block clean-services dark">
             <div class="container">
                 <div class="block-heading">
-                    <h2 class="text-info">Log In</h2>
+                    <h2 class="text-info">Service Page</h2>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in, mattis vitae leo.</p>
                 </div>
-                <form>
-                    <div class="mb-3"><label class="form-label" for="username">Username</label><input class="form-control item" type="text" id="username"></div>
-                    <div class="mb-3"><label class="form-label" for="password">Password</label><input class="form-control" type="password" id="password"></div>
-                    <div class="mb-3">
-                        <div class="form-check"><input class="form-check-input" type="checkbox" id="checkbox"><label class="form-check-label" for="checkbox">Remember me</label></div>
-                    </div><button class="btn btn-primary" type="button" onclick="login()">Log In</button>
-                </form>
+                <div class="row">
+
+                    <!-- SAMPLE FILE PREVIEW -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card"><img class="card-img-top w-100 d-block" src="assets/img/scenery/image5.jpg">
+                            <div class="card-body">
+                                <h4 class="card-title">Lorem Ipsum</h4>
+                                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in.</p>
+                            </div>
+                            <div><button class="btn btn-outline-primary btn-sm" type="button">Learn More</button></div>
+                        </div>
+                    </div>
+                    <!-- /SAMPLE FILE PREVIEW -->
+                </div>
             </div>
         </section>
     </main>
@@ -85,4 +89,5 @@
     <script src="assets/js/vanilla-zoom.js"></script>
     <script src="assets/js/theme.js"></script>
 </body>
+
 </html>
