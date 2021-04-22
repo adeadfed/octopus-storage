@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>title</title>
+    <script src="js/amazon-cognito-identity.js"></script>
+    <script src="js/aws-sdk.js"></script>
+</head>
+<body>
+<h1>Account</h1>
+<h2 id="user_name"></h2>
+<a onclick="log_out()" href="#">Log out</a>
+<script>
+    //var CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
+    var poolData = {
+        UserPoolId: 'us-east-1_C6uQIcIX0', // Your user pool id here
+        ClientId: '1srkenbrihhnjn21tinari10er', // Your client id here
+    };
+    const IDENTITY_POOL_ID = 'us-east-1:6e1ee89c-12ae-421c-8875-426fceebecac'
+
+
+    function log_out() {
+        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        var cognitoUser = userPool.getCurrentUser();
+        cognitoUser.signOut();
+        document.location.href = 'index.html'
+    }
+
+    var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+    var cognitoUser = userPool.getCurrentUser();
+
+    if (cognitoUser == null) {
+        document.location.href = 'index.html'
+    }
+
+    if (cognitoUser != null) {
+        cognitoUser.getSession(function(err, session) {
+            if (err) {
+                alert(err.message || JSON.stringify(err));
+                return;
+            }
+            console.log('session validity: ' + session.isValid());
+
+            // NOTE: getSession must be called to authenticate user before calling getUserAttributes
+
+            // cognitoUser.getUserAttributes(function(err, result) {
+            //     if (err) {
+            //         alert(err.message || JSON.stringify(err));
+            //         return;
+            //     }
+            //     for (i = 0; i < result.length; i++) {
+            //         console.log(
+            //             'attribute ' + result[i].getName() + ' has value ' + result[i].getValue()
+            //         );
+            //     }
+            // });
+
+            document.getElementById('user_name').innerText = 'Hello, ' + cognitoUser.username
+
+
+            AWS.config.region = 'us-east-1';
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                IdentityPoolId: IDENTITY_POOL_ID, // your identity pool id here
+                Logins: {
+                    // Change the key below according to the specific region your user pool is in.
+                    'cognito-idp.us-east-1.amazonaws.com/us-east-1_C6uQIcIX0': session
+                        .getIdToken()
+                        .getJwtToken(),
+                },
+            });
+            var sts = new AWS.STS();
+            var params = {
+            };
+            sts.getCallerIdentity(params, function(err, data) {
+                if (err) console.log(err, err.stack); // an error occurred
+                else console.log(data);
+            })
+
+            var s3 = new AWS.S3();
+            var params = {
+                Bucket: "cognitotest28934789273489",
+                MaxKeys: 2
+            };
+            s3.listObjects(params, function(err, data) {
+                if (err) console.log(err, err.stack); // an error occurred
+                else console.log(data);
+            })
+
+            // Instantiate aws sdk service objects now that the credentials have been updated.
+            // example: var s3 = new AWS.S3();
+        });
+    }
+</script>
+</body>
+</html>

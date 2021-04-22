@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>title</title>
+    <script src="js/amazon-cognito-identity.js"></script>
+</head>
+<body>
+<h1>Log in</h1>
+    <label>Username
+    <input type="text" id="username"></label><br>
+    <label>Password
+        <input type="password" id="password"></label><br>
+    <button onclick="do_login()">Log in</button>
+<script>
+    //var CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
+    var poolData = {
+        UserPoolId: 'us-east-1_C6uQIcIX0', // Your user pool id here
+        ClientId: '1srkenbrihhnjn21tinari10er', // Your client id here
+    };
+
+    function sign_up(username, password) {
+
+        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+        var attributeList = [];
+
+        var dataEmail = {
+            Name: 'email',
+            Value: 'email@mydomain.com',
+        };
+
+
+        var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
+
+
+        attributeList.push(attributeEmail);
+
+        userPool.signUp(username, password, attributeList, null, function(
+            err,
+            result
+        ) {
+            if (err) {
+                alert(err.message || JSON.stringify(err));
+                return;
+            }
+            var cognitoUser = result.user;
+            console.log('user name is ' + cognitoUser.getUsername());
+        });
+    }
+
+    function do_login() {
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+        console.log(username, password)
+        login(username, password)
+    }
+
+    function login(username, password) {
+        var authenticationData = {
+            Username: username,
+            Password: password,
+        };
+        var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
+            authenticationData
+        );
+        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        var userData = {
+            Username: username,
+            Pool: userPool,
+        };
+        var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+        cognitoUser.authenticateUser(authenticationDetails, {
+            onSuccess: function(result) {
+                var accessToken = result.getAccessToken().getJwtToken();
+                console.log(result)
+                console.log(accessToken)
+                document.location.href='account.html'
+
+            },
+
+            onFailure: function(err) {
+                alert(err.message || JSON.stringify(err));
+            },
+        });
+    }
+</script>
+</body>
+</html>
