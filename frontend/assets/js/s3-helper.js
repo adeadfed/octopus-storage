@@ -55,7 +55,7 @@ function S3UploadFile(Body,FileName,ContentType){
     });
 }
 
-
+// TODO: rewrite this to use copyObject
 function S3ShareFile(fileName,userIdSrc,userIdDst){
     var s3 = new AWS.S3({
         apiVersion: '2006-03-01',
