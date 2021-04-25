@@ -1,8 +1,11 @@
 // window.userPool.storage["aws.cognito.identity-id.us-east-2:0d896089-5205-46cc-9f07-ca8828e8b6d4"]
-function S3ListFolderFiles(UserFolder) {
+
+window.BUCKET_NAME = "octupus-storage-files-bad-practice"
+
+async function S3ListFolderFiles(UserFolder) {
     var s3 = new AWS.S3({
     apiVersion: '2006-03-01',
-    params: {Bucket: window.Bucket}});
+    params: {Bucket: window.BUCKET_NAME}});
 
     if (UserFolder == "") {
         var param = {Delimiter: '/'}
@@ -10,17 +13,19 @@ function S3ListFolderFiles(UserFolder) {
         var param = {Delimiter: '/', Prefix: `${UserFolder}/`}
     }
     
+    var userFiles = [];
+
     s3.listObjects(param, function(err, data) {
         if (err) {
-            return alert('There was an error listing your albums: ' + err.message);
+            return alert('There was an error listing your files: ' + err.message);
         } else {
-            var FolderFiles = data.Contents.map(function(obj) {
-            var prefix = obj.Key;
-            var folderFile = decodeURIComponent(prefix) //.split("/")[1];
-            console.log(folderFile);
-        });
-      }
+            data.Contents.map(function(obj) {
+                    userFiles.push(obj);
+            });
+        }
     });
+
+    return userFiles;
 }
 
 function S3ReadFile(keyFile){
@@ -48,16 +53,14 @@ function S3UploadFile(Body,FileName,ContentType){
        };
     var s3 = new AWS.S3({
     apiVersion: '2006-03-01',
-    params: {Bucket: window.Bucket}});
+    params: {Bucket: window.BUCKET_NAME}});
         
     s3.putObject(params, function(err, data) {    
        if (err){
-        console.log(err, err.stack); // an error occurred    
+        console.log(err, err.stack); // an error occurred   
+        return; 
        }
-       else {
-        console.log(data);           // successful response    /*    
-       }  
- 
+        document.location = "/files.html";
     });
 }
 
@@ -74,3 +77,64 @@ function S3ShareFile(fileName,userIdSrc,userIdDst){
             S3UploadFile(data.Body,`${userIdDst}/${fileName}`,data.ContentType)
         });
 }
+
+
+function upload() {
+    getAWSCredentials();
+    var name = document.getElementById('name').value;
+    var file = document.getElementById('upload-file').files[0];
+
+    var uploadPath = `${userPool.getCurrentUser().username}/${name ? name : file.name}`;
+
+    var r = new FileReader();
+    r.onload = res => {
+        S3UploadFile(r.result, uploadPath, "binary/octet-stream");
+    }
+
+    r.onerror = err => {
+        alert(err);
+    }
+
+    r.readAsArrayBuffer(file);
+}
+
+// async function displayFiles() {
+//     await getAWSCredentials();
+
+//     var hmtlContainer = document.getElementById('file_list');
+
+//     var userFolder = userPool.getCurrentUser().username;
+//     S3ListFolderFiles(userFolder).then((value) => {console.log(value)});
+
+//     // userFiles.forEach(function(element) {
+//     //     var fullPath = element.Key;
+//     //     var date = element.LastModified;
+//     //     var size = element.Size;
+
+//     //     var fileName = fullPath.split("/")[1];
+
+//     //     var fileCard = document.createElement('div');
+//     //     fileCard.className = "col-md-6 col-lg-4";
+        
+//     //     var cardText = `
+//     //                     <div class="card"><img class="card-img-top w-100 d-block" src="assets/img/scenery/image5.jpg">
+//     //                         <div class="card-body">
+//     //                             <h4 class="card-title">${fileName}</h4>
+//     //                             <p class="card-text">${date}</p>
+//     //                             <p class="card-text">${size}</p>
+//     //                         </div>
+//     //                         <div><button class="btn btn-outline-primary btn-sm" type="button">Learn More</button></div>
+//     //                     </div>`;
+
+//     //     console.log(cardText);
+        
+//     //     fileCard.innerHTML = cardText;
+//     //     console.log(fileCard);
+
+//     //     hmtlContainer.appendChild(fileCard);
+//     // });
+
+//     // var prefix = obj.Key;
+//     // var folderFile = decodeURIComponent(prefix).split("/")[1];
+//     // console.log(folderFile);
+// }

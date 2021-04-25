@@ -105,7 +105,7 @@ function logout() {
 
 // set cred settings to request a token from AWS cognito identity pool
 // we have to pass a role_arn here in order to receive credentials for a different role!
-function getAWSCredentials() {
+async function getAWSCredentials() {
     var cognitoUser = window.userPool.getCurrentUser();
 
     cognitoUser.getSession(function(err, session) {
@@ -135,7 +135,20 @@ function getAWSCredentials() {
                 [window.USER_POOL_ID] : jwtToken,
             },
         });
+
+
+        var sts = new AWS.STS();
+        var params = {
+        };
+        await sts.getCallerIdentity(params, function(err, data) {
+            if (err) {
+                console.log(err, err.stack);
+                return;
+            }
+            console.log(data);
+        });
     });
+    return;
 }
 
 
