@@ -135,50 +135,30 @@ function getAWSCredentialsForRole(roleArn, callback) {
 
         var jwtToken = session.getIdToken().getJwtToken();
         
-        // request ordinary credentials
-        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+    
+        // request identity id
+        var cognitoIdentity = new AWS.CognitoIdentity();
+        cognitoIdentity.getId({
             IdentityPoolId: window.IDENTITY_POOL_ID, // your identity pool id here
             Logins: {
                 // Change the key below according to the specific region your user pool is in.
                 [window.USER_POOL_ID] : jwtToken,
-            },
-        });
+            }
+        }, function(err, data) {
+            if (err) {
+                alert(err);
+            }
 
-    
-        // request accurate credentials
-        var cognitoIdentity = new AWS.CognitoIdentity();
-            cognitoIdentity.getId({
-                IdentityPoolId: window.IDENTITY_POOL_ID, // your identity pool id here
+            // get AWS credentials for particular role
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                IdentityId: data.IdentityId, 
+                CustomRoleArn: roleArn,
                 Logins: {
-                    // Change the key below according to the specific region your user pool is in.
                     [window.USER_POOL_ID] : jwtToken,
                 }
-            }, function(err, data) {
-                if (err) {
-                    alert(err);
-                }
-
-                cognitoIdentity.getCredentialsForIdentity({
-                    IdentityId: data.IdentityId, 
-                    CustomRoleArn: roleArn,
-                    Logins: {
-                        // Change the key below according to the specific region your user pool is in.
-                        [window.USER_POOL_ID] : jwtToken,
-                    },
-                }, function(err, data) {
-                    if (err) {
-                        console.log(err);
-                    }
-
-                    // replace ordinary credentials with privileged ones
-
-                    AWS.config.credentials.accessKeyId = data.AccessKeyId;
-                    AWS.config.credentials.secretAccessKey = data.SecretKey;
-                    AWS.config.credentials.sessionToken = data.SessionToken;
-                    AWS.config.data = data;
-                });
             });
-            STSCall(callback);
+            callback();
+        });
     });
 }
 
@@ -205,7 +185,7 @@ function getAWSCredentials(callback) {
         }
 
         var jwtToken = session.getIdToken().getJwtToken();
-        
+               
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
             IdentityPoolId: window.IDENTITY_POOL_ID, // your identity pool id here
             Logins: {
@@ -213,16 +193,8 @@ function getAWSCredentials(callback) {
                 [window.USER_POOL_ID] : jwtToken,
             },
         });
-        STSCall(callback);
+        callback();
     });
-}
-
-
-function STSCall(callback) {
-    var sts = new AWS.STS();
-    var params = {
-    };
-    sts.getCallerIdentity(params, callback);
 }
 
 

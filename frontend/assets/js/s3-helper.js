@@ -2,6 +2,7 @@
 
 window.BUCKET_NAME = "octupus-storage-files-bad-practice"
 
+
 function S3ListFolderFiles(UserFolder, callback) {
     var s3 = new AWS.S3({
     apiVersion: '2006-03-01',
@@ -15,6 +16,7 @@ function S3ListFolderFiles(UserFolder, callback) {
 
     s3.listObjects(param, callback);
 }
+
 
 function S3ReadFile(keyFile){
     var s3 = new AWS.S3({
@@ -30,6 +32,7 @@ function S3ReadFile(keyFile){
         console.log(objectData)
     });
 }
+
 
 function S3UploadFile(Body,FileName,ContentType){
     var params = {   
@@ -51,6 +54,7 @@ function S3UploadFile(Body,FileName,ContentType){
         document.location = "/files.html";
     });
 }
+
 
 function S3ShareFile(fileName,userIdSrc,userIdDst){
     var s3 = new AWS.S3({
@@ -86,6 +90,7 @@ function upload() {
         r.readAsArrayBuffer(file);
     });
 }
+
 
 function displayFiles() {
     getAWSCredentials(function() {
