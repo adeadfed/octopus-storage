@@ -3,71 +3,95 @@
 window.BUCKET_NAME = "octupus-storage-files-bad-practice"
 
 
-function S3ListFolderFiles(UserFolder, callback) {
-    var s3 = new AWS.S3({
-    apiVersion: '2006-03-01',
-    params: {Bucket: window.BUCKET_NAME}});
-
-    if (UserFolder == "") {
-        var param = {Delimiter: '/'}
-    } else {
-        var param = {Delimiter: '/', Prefix: `${UserFolder}/`}
-    }
-
-    s3.listObjects(param, callback);
-}
-
-
-function S3ReadFile(keyFile){
-    var s3 = new AWS.S3({
-    apiVersion: '2006-03-01',
-    params: {Bucket: window.Bucket}});
-        
-    s3.getObject({Key:keyFile}, function(err, data) {
-        // Handle any error and exit
-        if (err) {
-            console.log(err);
-        }
-        var objectData = data.Body; //.toString('utf-8');
-        console.log(objectData)
-    });
-}
-
-
-function S3UploadFile(Body,FileName,ContentType){
-    var params = {   
-        Body: Body,
-        Bucket: window.Bucket,
-        Key: FileName,
-        ServerSideEncryption: "AES256",
-        ContentType: ContentType
-       };
-    var s3 = new AWS.S3({
-    apiVersion: '2006-03-01',
-    params: {Bucket: window.BUCKET_NAME}});
-        
-    s3.putObject(params, function(err, data) {    
-       if (err){
-        console.log(err, err.stack); // an error occurred   
-        return; 
-       }
-        document.location = "/files.html";
-    });
-}
-
-// TODO: rewrite this to use copyObject
-function S3ShareFile(fileName,userIdSrc,userIdDst){
+function S3ListFolderFiles(folder, callback) {
     var s3 = new AWS.S3({
         apiVersion: '2006-03-01',
-        params: {Bucket: window.Bucket}});
-            
-        s3.getObject({Key:`${userIdSrc}/${fileName}`}, function(err, data) {
+        params: { Bucket: window.BUCKET_NAME }
+    });
 
-            if (err) {
-                console.log(err);
-            }
-            S3UploadFile(data.Body,`${userIdDst}/${fileName}`,data.ContentType)
-        });
+    if (folder ) {
+        var params = {
+            Delimiter: '/',
+            Prefix: `${folder}/`
+        };
+    } else {
+        var params = { Delimiter: '/' };
+    }
+
+    s3.listObjects(params, callback);
+}
+
+
+function S3DownloadFile(fileKey) {
+    var s3 = new AWS.S3({
+        apiVersion: '2006-03-01',
+        params: { Bucket: window.BUCKET_NAME }
+    });
+
+    var params = {
+        Bucket: window.BUCKET_NAME,
+        Key: fileKey,
+        Expires: 60 * 5
+    };
+  
+    s3.getSignedUrl('getObject', params, function(err, url) {
+        if (err) {
+            console.log(err, err.stack);
+        }
+        else {
+            window.open(url, '_blank');
+        }
+    });
+}
+
+
+function S3UploadFile(Body, dstPath, ContentType, callback){
+    var params = {   
+        Body: Body,
+        Bucket: window.BUCKET_NAME,
+        Key: dstPath,
+        ContentType: ContentType
+       };
+    
+    var s3 = new AWS.S3({
+        apiVersion: '2006-03-01',
+        params: params 
+    });
+        
+    s3.putObject(params, callback);
+}
+
+
+function S3DeleteFile(fileKey, callback) {
+    var s3 = new AWS.S3({
+        apiVersion: '2006-03-01',
+        params: { Bucket: window.BUCKET_NAME }
+    });
+
+    var params = {
+        Bucket: window.BUCKET_NAME,
+        Key: fileKey,
+    };
+  
+    s3.deleteObject(params, callback);
+}
+
+
+function S3ShareFile(srcPath, dstPath, callback) {
+
+
+    var params = {
+        Bucket: window.BUCKET_NAME,
+        CopySource: srcPath,
+        Key: dstPath
+    };
+
+    var s3 = new AWS.S3({
+        apiVersion: '2006-03-01',
+        params: params
+    });
+
+    s3.copyObject(params, callback);
 }
 
 
@@ -75,12 +99,32 @@ function upload() {
     getAWSCredentials(function() {
         var name = document.getElementById('name').value;
         var file = document.getElementById('upload-file').files[0];
+        var shareUser = document.getElementById('share-user').value;
 
         var uploadPath = `${userPool.getCurrentUser().username}/${name ? name : file.name}`;
 
         var r = new FileReader();
         r.onload = res => {
-            S3UploadFile(r.result, uploadPath, "binary/octet-stream");
+            S3UploadFile(r.result, uploadPath, "binary/octet-stream", function(err, data) {
+                if (err) {
+                    console.log(err, err.stack);
+                }
+                console.log(data);
+
+                if (shareUser != "None") {
+                    var srcPath  = `${window.BUCKET_NAME}/${uploadPath}`;
+                    var dstPath = `${shareUser}/${name ? name : file.name}`;
+                    S3ShareFile(srcPath, dstPath, function() {
+                        if (err) {
+                            console.log(err, err.stack);
+                        }
+                        window.location = "/files.html";
+                    });
+                }
+                else {
+                    window.location = "/files.html";
+                }
+            });
         }
 
         r.onerror = err => {
@@ -88,6 +132,52 @@ function upload() {
         }
 
         r.readAsArrayBuffer(file);
+    });
+}
+
+
+function download(fileName) {
+    getAWSCredentials(function() {
+        S3DownloadFile(fileName);
+    });
+}
+
+
+function share() {
+    getAWSCredentials(function() {
+
+        var srcUser = userPool.getCurrentUser().username;
+        var shareUser = document.getElementById('share-user').value;
+
+        var fileName = document.getElementById('name').value;
+
+        var srcPath = `${window.BUCKET_NAME}/${srcUser}/${fileName}`;
+        var dstPath = `${shareUser}/${fileName}`;
+
+        S3ShareFile(srcPath, dstPath, function(err, data) {
+            if (err) {
+                console.log(err, err.stack);
+            }
+            else {
+                console.log(data);
+                window.location = "/files.html";
+            }
+        });
+    });
+}
+
+
+function deleteFile(filePath) {
+    getAWSCredentials(function() {
+        S3DeleteFile(filePath, function(err, data) {
+            if (err) {
+                console.log(err, err.stack);
+            }
+            else {
+                console.log(data);
+                window.location.reload();
+            }
+        });
     });
 }
 
@@ -117,21 +207,16 @@ function displayFiles() {
                                 <div class="card"><img class="card-img-top w-100 d-block" style="max-width: 45%; margin-top:20px; margin-bottom:10px; margin-left:auto; margin-right:auto" src="assets/img/document.svg">
                                     <div class="card-body">
                                         <h4 class="card-title">${fileName}</h4>
-                                        <p class="card-text">${date}</p>
-                                        <p class="card-text">${size}</p>
+                                        <p class="card-text">Last modified: ${ new Intl.DateTimeFormat('en-GB', {dateStyle:'full', timeStyle:'medium'}).format(date) }</p>
+                                        <p class="card-text">Size: ${ Math.floor(size/1024) } KB</p>
                                     </div>
                                     <div>
-                                        <button class="btn btn-outline-primary btn-sm" type="button">Download</button>
-                                        <button class="btn btn-outline-primary btn-sm" type="button">Share</button>
-                                        <button class="btn btn-outline-primary-red btn-sm" type="button">Delete</button>
+                                        <button class="btn btn-outline-primary btn-sm" type="button" onclick="download('${fullPath}')">Download</button>
+                                        <button class="btn btn-outline-primary btn-sm" type="button" onclick="document.location.href='/upload.html?mode=share&filename=${fileName}'">Share</button>
+                                        <button class="btn btn-outline-primary-red btn-sm" type="button" onclick="deleteFile('${fullPath}')">Delete</button>
                                     </div>
-                                </div>`;
-    
-                console.log(cardText);
-                
-                fileCard.innerHTML = cardText;
-                console.log(fileCard);
-    
+                                </div>`;              
+                fileCard.innerHTML = cardText; 
                 hmtlContainer.appendChild(fileCard);
             });
         });

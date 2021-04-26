@@ -70,6 +70,7 @@ function confirmSignup() {
     cognitoUser = null;
 }
 
+
 function login() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
@@ -185,7 +186,7 @@ function getAWSCredentials(callback) {
         }
 
         var jwtToken = session.getIdToken().getJwtToken();
-               
+
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
             IdentityPoolId: window.IDENTITY_POOL_ID, // your identity pool id here
             Logins: {
@@ -196,6 +197,37 @@ function getAWSCredentials(callback) {
         callback();
     });
 }
+
+
+function displayUsers() {
+    var selectUsers = document.getElementById('share-user');
+
+    var emptyOpt = document.createElement('option');
+    emptyOpt.value = 'None';
+    emptyOpt.innerHTML = 'None';
+    selectUsers.appendChild(emptyOpt);
+
+    getAWSCredentialsForRole('arn:aws:iam::861640425204:role/aws_cognito_bad_practice_list_users_role', function() {
+        var identityServiceProvider = new AWS.CognitoIdentityServiceProvider();
+        var params = {
+            UserPoolId: 'us-east-2_mDdinQbcT'
+            };
+            identityServiceProvider.listUsers(params, function(err, data){
+                if(err) {
+                    console.log(err, err.stack);
+                }
+                else {
+                    data.Users.forEach(function(user) {
+                        var userOpt = document.createElement('option');
+                        userOpt.value = user.Username;
+                        userOpt.innerHTML = user.Username;
+                        selectUsers.appendChild(userOpt);
+                    });
+                }
+        });
+    });
+}
+
 
 
 
