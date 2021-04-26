@@ -42,16 +42,24 @@ function signup() {
         document.getElementById("username").disabled = true;
         document.getElementById("password").disabled = true;
         document.getElementById("email").disabled = true;
-        document.getElementById("signup_button").disabled = true;
+        document.getElementById("signup-button").style.display = "none";
 
         document.getElementById("code_confirmation").style.display = "block";
-
+        document.getElementById("confirm-signup-button").style.display = "block";
     });
 }
 
 
 function confirmSignup() {
     var confirmationCode = document.getElementById("code").value;
+    var username = document.getElementById("username").value;
+    
+    var userData = {
+        Username: username,
+        Pool: userPool,
+    };
+
+    var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
     cognitoUser.confirmRegistration(confirmationCode, true, function(
             err,
@@ -92,9 +100,9 @@ function login() {
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
     cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: function(_) {
-            document.location = '/';
-        },
+        onSuccess: getAWSCredentials(function() {
+            window.location = "/index.html";
+            }),
 
         onFailure: function(err) {
             alert(err.message || JSON.stringify(err));

@@ -46,8 +46,9 @@
                     <div class="mb-3"><label class="form-label" for="username">Username</label><input class="form-control item" type="text" id="username"></div>
                     <div class="mb-3"><label class="form-label" for="password">Password</label><input class="form-control item" type="password" id="password"></div>
                     <div class="mb-3"><label class="form-label" for="email">Email</label><input class="form-control item" type="email" id="email"></div>
-                    <div class="mb-3" id="code_confirmation" style="display: none;"><label class="form-label" for="code">Confirmation code</label><input class="form-control item" onchange="confirmSignup()" type="text" id="code"></div>
-                    <button class="btn btn-primary" type="button" id="signup_button" onclick="signup()">Sign Up</button>
+                    <div class="mb-3" id="code_confirmation" style="display: none;"><label class="form-label" for="code">Confirmation code</label><input class="form-control item" type="text" id="code"></div>
+                    <button class="btn btn-primary" type="button" id="signup-button" onclick="signup()">Sign Up</button>
+                    <button class="btn btn-primary" type="button" id="confirm-signup-button" onclick="confirmSignup()" style="display: none;">Confirm Sign Up</button>
                 </form>
             </div>
         </section>
