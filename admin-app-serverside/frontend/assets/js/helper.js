@@ -25,6 +25,26 @@ function loadUsers() {
 }
 
 
+function deleteUser(username) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('DELETE', `/users/${username}`, true);
+
+    var authHeader = 'Bearer ' + localStorage.getItem('cognito-access-token');
+    xhr.setRequestHeader('Authorization', authHeader);
+
+    xhr.onreadystatechange = function() {
+        if (xhr.status == 200) {
+            alert('Success!');
+            window.location.reload();
+        }
+        else {
+            alert('An error occured');
+        }
+    }
+    xhr.send();
+}
+
+
 function login() {
     var username = document.getElementById('username').value;
     var password = document.getElementById('password').value;

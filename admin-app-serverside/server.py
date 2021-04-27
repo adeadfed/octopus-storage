@@ -2,7 +2,7 @@ import os
 import hmac
 import boto3
 import base64
-from flask_cognito import *
+from flask_cognito import CognitoAuth, cognito_auth_required
 from hashlib import sha256
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, render_template_string, send_from_directory
@@ -89,10 +89,18 @@ def list_users(client):
                 <td>{}</td>
                 <td>{}</td>
                 <td>{}</td>
-                <td><button class="btn btn-danger" type="button">Delete</button></td>
+                <td><button class="btn btn-danger" type="button" onclick="deleteUser({})">Delete</button></td>
               </tr>'''.format(username, email, groups, user_status, username)
     return users_info
 
+ 
+def delete_user(client, username):
+    response = client.admin_delete_user(
+        UserPoolId=USER_POOL_ID,
+        Username=username
+    )
+    return response
+    
     
 app = Flask(__name__, template_folder='./frontend/')
 app.config.update({
@@ -107,7 +115,7 @@ app.config.update({
 
 @app.route('/', methods=['GET', 'POST'])
 @app.errorhandler(500)
-def index():
+def index_view():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -118,12 +126,18 @@ def index():
 
 @app.route('/users', methods=['GET'])
 @cognito_auth_required
-def users():      
+def users_view():      
     users = list_users(user_pool_client)
     with open('frontend/users.html', 'rb') as f:
         user_file = f.read().decode('utf-8')
     
     return render_template_string(user_file.format(users))
+
+
+@app.route('/users/<username>', methods=['DELETE'])
+@cognito_auth_required
+def delete_user_view(username):
+    return delete_user(user_pool_client, username)
 
 
 @app.route('/assets/<path:path>')
