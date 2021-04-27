@@ -98,11 +98,14 @@ function login() {
     };
 
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-
+    
     cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: getAWSCredentials(function() {
+        onSuccess: function() {
+            window.cognitoUser = cognitoUser;
+            getAWSCredentials(function() {
             window.location = "/index.html";
-            }),
+            })
+        },
 
         onFailure: function(err) {
             alert(err.message || JSON.stringify(err));
