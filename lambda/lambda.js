@@ -1,28 +1,29 @@
-var AWS = require ('aws-sdk')
+const AWS = require('aws-sdk')
+const COGNITO_GROUP = 'aws-cognito-bad-practice-list-users-group'
+const COGNITO_POOL_ID = 'us-east-2_mDdinQbcT' 
+
 
 exports.handler = (event, context, callback) => {
     console.log(event);
     
-    var cognitoIdp = new AWS.CognitoIdentityServiceProvider();
+    let cognitoIdp = new AWS.CognitoIdentityServiceProvider();
     
-    var username = event.userName;
+    let username = event.userName;
     
-    var params = {
-        GroupName: 'aws-cognito-bad-practice-list-users-group',
-        UserPoolId: 'us-east-2_mDdinQbcT',
+    let params = {
+        GroupName: COGNITO_GROUP,
+        UserPoolId: COGNITO_POOL_ID,
         Username: username
     }
     
-    cognitoIdp.adminAddUserToGroup(params, function(err, data) {
+    cognitoIdp.adminAddUserToGroup(params, function(err, _) {
         if (err) {
             console.log(err, err.stack);
         }
         else {
             // implement custom logging for our beautiful app here!!!
             logger = Function('date', `console.log("Added user ${username} to the group at: " + date`);
-            
-            var date = Date();
-            logger(date);
+            logger(new Date());
             
             callback(null, event);
         }
