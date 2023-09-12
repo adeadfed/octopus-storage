@@ -4,30 +4,28 @@ import boto3
 import base64
 from flask_cognito import CognitoAuth, cognito_auth_required
 from hashlib import sha256
-from dotenv import load_dotenv
 from flask import Flask, request, render_template, render_template_string, send_from_directory
 
 # env
 #######################################################
-load_dotenv()
 # aws settings
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 
 # cognito settings
-REGION_NAME = os.getenv("AWS_REGION")
-CLIENT_ID = os.getenv("CLIENT_ID")
-CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-USER_POOL_ID = os.getenv("USER_POOL_ID")
+REGION_NAME = os.getenv('AWS_REGION')
+CLIENT_ID = os.getenv('CLIENT_ID')
+CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+USER_POOL_ID = os.getenv('USER_POOL_ID')
 #######################################################
 
 user_pool_client = boto3.client(
-        'cognito-idp', 
-        region_name=REGION_NAME,
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    )
+    'cognito-idp',
+    region_name=REGION_NAME,
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+)
 
 
 def get_secret_hash(username):
@@ -35,23 +33,24 @@ def get_secret_hash(username):
     dig = hmac.new(
         CLIENT_SECRET.encode('utf-8'),
         msg=msg.encode('utf-8'),
-        digestmod=sha256).digest()
-    
+        digestmod=sha256
+    ).digest()
+
     return base64.b64encode(dig).decode()
-    
+
 
 def authenticate(client, username, password):
-    
     response = client.admin_initiate_auth(
         UserPoolId=USER_POOL_ID,
         ClientId=CLIENT_ID,
         AuthFlow='ADMIN_USER_PASSWORD_AUTH',
-        AuthParameters = {
+        AuthParameters={
             'USERNAME': username,
             'PASSWORD': password,
             'SECRET_HASH': get_secret_hash(username)
         }
     )
+
     return response
 
 
@@ -60,10 +59,11 @@ def get_groups_for_user(client, username):
         Username=username,
         UserPoolId=USER_POOL_ID
     )
-    
+
     group_names = list()
     for group in response['Groups']:
         group_names.append(group['GroupName'])
+
     return group_names
 
 
@@ -74,15 +74,15 @@ def list_users(client):
             'email'
         ]
     )
-    
+
     users_info = ''
-    
+
     for user in response['Users']:
-        username    = user['Username']
-        groups      = ', '.join(get_groups_for_user(client, user['Username'])) 
-        email       = user['Attributes'][0]['Value']
+        username = user['Username']
+        groups = ', '.join(get_groups_for_user(client, user['Username']))
+        email = user['Attributes'][0]['Value']
         user_status = user['UserStatus']
-        
+
         users_info += '''
               <tr>
                 <td>{}</td>
@@ -91,17 +91,19 @@ def list_users(client):
                 <td>{}</td>
                 <td><button class="btn btn-danger" type="button" onclick="deleteUser({})">Delete</button></td>
               </tr>'''.format(username, email, groups, user_status, username)
+
     return users_info
 
- 
+
 def delete_user(client, username):
     response = client.admin_delete_user(
         UserPoolId=USER_POOL_ID,
         Username=username
     )
+
     return response
-    
-    
+
+
 app = Flask(__name__, template_folder='./frontend/')
 app.config.update({
     'COGNITO_REGION': REGION_NAME,
@@ -119,6 +121,7 @@ def index_view():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+
         return authenticate(user_pool_client, username, password)
     else:
         return render_template('login.html')
@@ -126,11 +129,11 @@ def index_view():
 
 @app.route('/users', methods=['GET'])
 @cognito_auth_required
-def users_view():      
+def users_view():
     users = list_users(user_pool_client)
     with open('frontend/users.html', 'rb') as f:
         user_file = f.read().decode('utf-8')
-    
+
     return render_template_string(user_file.format(users))
 
 

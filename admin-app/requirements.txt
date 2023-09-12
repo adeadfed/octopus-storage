@@ -1,0 +1,3 @@
+boto3==1.28.45
+Flask==2.3.3
+Flask-Cognito==1.18
