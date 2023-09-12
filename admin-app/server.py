@@ -150,4 +150,4 @@ def assets(path):
 
 if __name__ == '__main__':
     cogauth = CognitoAuth(app)
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0')
