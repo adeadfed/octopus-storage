@@ -40,7 +40,7 @@ function signup() {
 function confirmSignup() {
     var confirmationCode = document.getElementById("code").value;
     var username = document.getElementById("username").value;
-    
+
     var userData = {
         Username: username,
         Pool: userPool,
@@ -49,19 +49,18 @@ function confirmSignup() {
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
     cognitoUser.confirmRegistration(confirmationCode, true, function(
-            err,
-            _
-        ) {
-            if (err) {
+        err,
+        _
+    ) {
+        if (err) {
             alert(err.message || JSON.stringify(err));
             return;
-            }
-            else {
-                document.location = "/login.html";
-                return;
-            }
-        });
-    
+        } else {
+            document.location = "/login.html";
+            return;
+        }
+    });
+
     cognitoUser = null;
 }
 
@@ -78,19 +77,19 @@ function login() {
     var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
         authenticationData
     );
-    
+
     var userData = {
         Username: username,
         Pool: userPool,
     };
 
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-    
+
     cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: function() {
             window.cognitoUser = cognitoUser;
             getAWSCredentials(function() {
-            window.location = "/index.html";
+                window.location = "/index.html";
             })
         },
 
@@ -105,7 +104,6 @@ function logout() {
     window.userPool.getCurrentUser().signOut();
     window.location = "/";
 }
-
 
 
 // set cred settings to request a token from AWS cognito identity pool
@@ -133,14 +131,14 @@ function getAWSCredentialsForRole(roleArn, callback) {
         }
 
         var jwtToken = session.getIdToken().getJwtToken();
-        
-    
+
+
         // request identity id
         var cognitoIdentity = new AWS.CognitoIdentity();
         cognitoIdentity.getId({
             IdentityPoolId: window.IDENTITY_POOL_ID,
             Logins: {
-                [window.USER_POOL_ID] : jwtToken,
+                [window.USER_POOL_ID]: jwtToken,
             }
         }, function(err, data) {
             if (err) {
@@ -148,10 +146,10 @@ function getAWSCredentialsForRole(roleArn, callback) {
             }
 
             AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                IdentityId: data.IdentityId, 
+                IdentityId: data.IdentityId,
                 CustomRoleArn: roleArn,
                 Logins: {
-                    [window.USER_POOL_ID] : jwtToken,
+                    [window.USER_POOL_ID]: jwtToken,
                 }
             });
             callback();
@@ -186,7 +184,7 @@ function getAWSCredentials(callback) {
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
             IdentityPoolId: window.IDENTITY_POOL_ID,
             Logins: {
-                [window.USER_POOL_ID] : jwtToken,
+                [window.USER_POOL_ID]: jwtToken,
             },
         });
         callback();
@@ -206,19 +204,18 @@ function displayUsers() {
         var identityServiceProvider = new AWS.CognitoIdentityServiceProvider();
         var params = {
             UserPoolId: window.POOL_DATA.UserPoolId
-            };
-            identityServiceProvider.listUsers(params, function(err, data){
-                if(err) {
-                    console.log(err, err.stack);
-                }
-                else {
-                    data.Users.forEach(function(user) {
-                        var userOpt = document.createElement('option');
-                        userOpt.value = user.Username;
-                        userOpt.innerHTML = user.Username;
-                        selectUsers.appendChild(userOpt);
-                    });
-                }
+        };
+        identityServiceProvider.listUsers(params, function(err, data) {
+            if (err) {
+                console.log(err, err.stack);
+            } else {
+                data.Users.forEach(function(user) {
+                    var userOpt = document.createElement('option');
+                    userOpt.value = user.Username;
+                    userOpt.innerHTML = user.Username;
+                    selectUsers.appendChild(userOpt);
+                });
+            }
         });
     });
 }

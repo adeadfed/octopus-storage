@@ -1,16 +1,20 @@
 function S3ListFolderFiles(folder, callback) {
     var s3 = new AWS.S3({
         apiVersion: '2006-03-01',
-        params: { Bucket: window.BUCKET_NAME }
+        params: {
+            Bucket: window.BUCKET_NAME
+        }
     });
 
-    if (folder ) {
+    if (folder) {
         var params = {
             Delimiter: '/',
             Prefix: `${folder}/`
         };
     } else {
-        var params = { Delimiter: '/' };
+        var params = {
+            Delimiter: '/'
+        };
     }
 
     s3.listObjects(params, callback);
@@ -20,7 +24,9 @@ function S3ListFolderFiles(folder, callback) {
 function S3DownloadFile(fileKey) {
     var s3 = new AWS.S3({
         apiVersion: '2006-03-01',
-        params: { Bucket: window.BUCKET_NAME }
+        params: {
+            Bucket: window.BUCKET_NAME
+        }
     });
 
     var params = {
@@ -28,31 +34,30 @@ function S3DownloadFile(fileKey) {
         Key: fileKey,
         Expires: 60 * 5
     };
-  
+
     s3.getSignedUrl('getObject', params, function(err, url) {
         if (err) {
             console.log(err, err.stack);
-        }
-        else {
+        } else {
             window.open(url, '_blank');
         }
     });
 }
 
 
-function S3UploadFile(Body, dstPath, ContentType, callback){
-    var params = {   
+function S3UploadFile(Body, dstPath, ContentType, callback) {
+    var params = {
         Body: Body,
         Bucket: window.BUCKET_NAME,
         Key: dstPath,
         ContentType: ContentType
-       };
-    
+    };
+
     var s3 = new AWS.S3({
         apiVersion: '2006-03-01',
-        params: params 
+        params: params
     });
-        
+
     s3.putObject(params, callback);
 }
 
@@ -60,14 +65,16 @@ function S3UploadFile(Body, dstPath, ContentType, callback){
 function S3DeleteFile(fileKey, callback) {
     var s3 = new AWS.S3({
         apiVersion: '2006-03-01',
-        params: { Bucket: window.BUCKET_NAME }
+        params: {
+            Bucket: window.BUCKET_NAME
+        }
     });
 
     var params = {
         Bucket: window.BUCKET_NAME,
         Key: fileKey,
     };
-  
+
     s3.deleteObject(params, callback);
 }
 
@@ -107,7 +114,7 @@ function upload() {
                 console.log(data);
 
                 if (shareUser != "None") {
-                    var srcPath  = `${window.BUCKET_NAME}/${uploadPath}`;
+                    var srcPath = `${window.BUCKET_NAME}/${uploadPath}`;
                     var dstPath = `${shareUser}/${name ? name : file.name}`;
                     S3ShareFile(srcPath, dstPath, function() {
                         if (err) {
@@ -115,8 +122,7 @@ function upload() {
                         }
                         window.location = "/files.html";
                     });
-                }
-                else {
+                } else {
                     window.location = "/files.html";
                 }
             });
@@ -152,8 +158,7 @@ function share() {
         S3ShareFile(srcPath, dstPath, function(err, data) {
             if (err) {
                 console.log(err, err.stack);
-            }
-            else {
+            } else {
                 console.log(data);
                 window.location = "/files.html";
             }
@@ -167,8 +172,7 @@ function deleteFile(filePath) {
         S3DeleteFile(filePath, function(err, data) {
             if (err) {
                 console.log(err, err.stack);
-            }
-            else {
+            } else {
                 console.log(data);
                 window.location.reload();
             }
@@ -183,7 +187,7 @@ function displayFiles() {
 
         var userFolder = userPool.getCurrentUser().username;
         S3ListFolderFiles(userFolder, function(err, data) {
-            if(err) {
+            if (err) {
                 alert(err);
                 return;
             }
@@ -192,12 +196,12 @@ function displayFiles() {
                 var fullPath = element.Key;
                 var date = element.LastModified;
                 var size = element.Size;
-    
+
                 var fileName = fullPath.split("/")[1];
-    
+
                 var fileCard = document.createElement('div');
                 fileCard.className = "col-md-6 col-lg-4";
-                
+
                 var cardText = `
                                 <div class="card"><img class="card-img-top w-100 d-block" style="max-width: 45%; margin-top:20px; margin-bottom:10px; margin-left:auto; margin-right:auto" src="assets/img/document.svg">
                                     <div class="card-body">
@@ -210,8 +214,8 @@ function displayFiles() {
                                         <button class="btn btn-outline-primary btn-sm" type="button" onclick="document.location.href='/upload.html?mode=share&filename=${fileName}'">Share</button>
                                         <button class="btn btn-outline-primary-red btn-sm" type="button" onclick="deleteFile('${fullPath}')">Delete</button>
                                     </div>
-                                </div>`;              
-                fileCard.innerHTML = cardText; 
+                                </div>`;
+                fileCard.innerHTML = cardText;
                 hmtlContainer.appendChild(fileCard);
             });
         });

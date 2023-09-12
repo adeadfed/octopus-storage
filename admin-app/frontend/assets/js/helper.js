@@ -16,8 +16,7 @@ function loadUsers() {
         if (xhr.status == 200) {
             document.body.innerHTML = xhr.responseText;
             setHeader();
-        }
-        else {
+        } else {
             alert('An error occured');
         }
     }
@@ -36,8 +35,7 @@ function deleteUser(username) {
         if (xhr.status == 200) {
             alert('Success!');
             window.location.reload();
-        }
-        else {
+        } else {
             alert('An error occured');
         }
     }
@@ -63,8 +61,7 @@ function login() {
                 localStorage.setItem('cognito-access-token', response.AuthenticationResult.AccessToken);
 
                 loadUsers();
-            }
-            else {
+            } else {
                 alert('An error occured');
             }
         }
@@ -84,10 +81,9 @@ function setHeader() {
     var authHeader = '<li class="nav-item"><a class="nav-link" href="#" onclick="logout()">Logout</a></li>';
     var unauthHeader = '<li class="nav-item"><a class="nav-link" href="/">Login</a></li>';
 
-    if(loggedIn()) {
+    if (loggedIn()) {
         document.getElementById('header').innerHTML = authHeader;
-    }
-    else {
+    } else {
         document.getElementById('header').innerHTML = unauthHeader;
     }
 }
