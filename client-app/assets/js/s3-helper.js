@@ -1,8 +1,3 @@
-// window.userPool.storage["aws.cognito.identity-id.us-east-2:0d896089-5205-46cc-9f07-ca8828e8b6d4"]
-
-window.BUCKET_NAME = "octupus-storage-files-bad-practice"
-
-
 function S3ListFolderFiles(folder, callback) {
     var s3 = new AWS.S3({
         apiVersion: '2006-03-01',
