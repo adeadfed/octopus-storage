@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo "AWS_ACCESS_KEY_ID=${aws_access_key_id}" >> /etc/environment
+echo "AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}" >> /etc/environment
+echo "AWS_REGION=${region_id}" >> /etc/environment
+echo "CLIENT_ID=${user_pool_client_id}" >> /etc/environment
+echo "CLIENT_SECRET=${user_pool_client_secret}" >> /etc/environment
+echo "USER_POOL_ID=${user_pool_id}" >> /etc/environment
+
+apt update
+apt install python3 python3-pip
+
+mkdir -p /opt/admin_app
+cd /opt/admin_app
+
+# python3 -m pip install -r requirements.txt
