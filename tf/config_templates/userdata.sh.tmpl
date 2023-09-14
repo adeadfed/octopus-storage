@@ -8,9 +8,14 @@ echo "CLIENT_SECRET=${user_pool_client_secret}" >> /etc/environment
 echo "USER_POOL_ID=${user_pool_id}" >> /etc/environment
 
 apt update
-apt install python3 python3-pip
+apt install python3 python3-pip -y
 
-mkdir -p /opt/admin_app
-cd /opt/admin_app
+cd /opt
+wget https://github.com/adeadfed/octopus-storage/releases/download/auto-deploy/admin-app.tar.gz -O admin-app.tar.gz
+tar -xzvf admin-app.tar.gz --no-same-owner --no-same-permissions
 
-# python3 -m pip install -r requirements.txt
+cd admin-app
+python3 -m pip install -r requirements.txt
+
+mv admin_app.service /etc/systemd/system/
+systemctl restart admin_app

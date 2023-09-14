@@ -1,0 +1,14 @@
+[Unit]
+Description=Octopus Admin Web app service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/admin-app
+ExecStart=/usr/bin/env python3 server.py
+EnvironmentFile=/etc/environment
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
