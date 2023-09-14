@@ -66,10 +66,10 @@ resource "aws_cognito_identity_pool_roles_attachment" "storage_role" {
   roles = {
     "authenticated" = aws_iam_role.cognito_ip_auth_role.arn
   }
-  
+
   role_mapping {
-    identity_provider = "${aws_cognito_user_pool.octopus_user_pool.endpoint}:${aws_cognito_user_pool_client.octopus_storage_client.id}"
+    identity_provider         = "${aws_cognito_user_pool.octopus_user_pool.endpoint}:${aws_cognito_user_pool_client.octopus_storage_client.id}"
     ambiguous_role_resolution = "AuthenticatedRole"
-    type = "Token"
+    type                      = "Token"
   }
 }

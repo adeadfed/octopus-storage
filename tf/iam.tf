@@ -56,12 +56,12 @@ resource "aws_iam_role" "cognito_ip_auth_role" {
         "Principal" : {
           "Federated" : "cognito-identity.amazonaws.com"
         },
-        "Condition": {
-          "StringEquals": {
-            "cognito-identity.amazonaws.com:aud": aws_cognito_identity_pool.octopus_identity_pool.id
+        "Condition" : {
+          "StringEquals" : {
+            "cognito-identity.amazonaws.com:aud" : aws_cognito_identity_pool.octopus_identity_pool.id
           },
-          "ForAnyValue:StringLike": {
-            "cognito-identity.amazonaws.com:amr": "authenticated"
+          "ForAnyValue:StringLike" : {
+            "cognito-identity.amazonaws.com:amr" : "authenticated"
           }
         }
       }
