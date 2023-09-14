@@ -108,3 +108,4 @@ dist
 # Terraform files
 .terraform/*
 .terraform*
+*.tfstate*
