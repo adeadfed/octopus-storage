@@ -4,7 +4,7 @@ output "octopus_admin_ssh_key" {
 }
 
 output "octopus_admin_web_url" {
-  value = "http://${aws_instance.octopus_admin_web_app_ec2.public_dns}/"
+  value = "http://${aws_instance.octopus_admin_web_app_ec2.public_dns}"
 }
 
 # output "octopus_storage_frontend_bucket" {
@@ -12,7 +12,7 @@ output "octopus_admin_web_url" {
 # }
 
 output "octopus_storage_web_url" {
-  value = aws_cloudfront_distribution.octopus_storage_cloudfront.domain_name
+  value = "https://${aws_cloudfront_distribution.octopus_storage_cloudfront.domain_name}"
 }
 
 # output "octopus_user_pool_id" {
