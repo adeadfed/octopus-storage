@@ -1,4 +1,4 @@
-# user pool group role
+# user pool group roles
 resource "aws_iam_role" "cognito_up_list_users_role" {
   name = "aws-cognito-bad-practice-list-users-role"
 
@@ -19,6 +19,28 @@ resource "aws_iam_role" "cognito_up_list_users_role" {
 resource "aws_iam_role_policy_attachment" "cognito_power_user_policy" {
   role       = aws_iam_role.cognito_up_list_users_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonCognitoPowerUser"
+}
+
+resource "aws_iam_role" "admin_role" {
+  name = "admin-role"
+
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : "sts:AssumeRoleWithWebIdentity",
+        "Principal" : {
+          "Federated" : "cognito-identity.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "admin_policy" {
+  role       = aws_iam_role.admin_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 # identity pool authenticated role
@@ -55,14 +77,6 @@ resource "aws_iam_role" "cognito_ip_auth_role" {
         "Action" : "sts:AssumeRoleWithWebIdentity",
         "Principal" : {
           "Federated" : "cognito-identity.amazonaws.com"
-        },
-        "Condition" : {
-          "StringEquals" : {
-            "cognito-identity.amazonaws.com:aud" : aws_cognito_identity_pool.octopus_identity_pool.id
-          },
-          "ForAnyValue:StringLike" : {
-            "cognito-identity.amazonaws.com:amr" : "authenticated"
-          }
         }
       }
     ]

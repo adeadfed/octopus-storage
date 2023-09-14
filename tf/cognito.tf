@@ -50,6 +50,12 @@ resource "aws_cognito_user_group" "aws_cognito_storage_users_group" {
   role_arn     = aws_iam_role.cognito_ip_auth_role.arn
 }
 
+resource "aws_cognito_user_group" "aws_cognito_admin_group" {
+  name         = "admin-group"
+  user_pool_id = aws_cognito_user_pool.octopus_user_pool.id
+  role_arn     = aws_iam_role.admin_role.arn
+}
+
 # identity pool
 resource "aws_cognito_identity_pool" "octopus_identity_pool" {
   identity_pool_name               = "Octopus Identity Pool"
