@@ -79,3 +79,25 @@ resource "aws_cognito_identity_pool_roles_attachment" "storage_role" {
     type                      = "Token"
   }
 }
+
+# identity pool with rule based role mapping
+# resource "aws_cognito_identity_pool_roles_attachment" "storage_role" {
+#   identity_pool_id = aws_cognito_identity_pool.octopus_identity_pool.id
+
+#   roles = {
+#     "authenticated" = aws_iam_role.cognito_ip_auth_role.arn
+#   }
+
+#   role_mapping {
+#     identity_provider         = "${aws_cognito_user_pool.octopus_user_pool.endpoint}:${aws_cognito_user_pool_client.octopus_storage_client.id}"
+#     ambiguous_role_resolution = "AuthenticatedRole"
+#     type                      = "Rules"
+
+#     mapping_rule {
+#       claim = "email"
+#       match_type = "Contains"
+#       value = "@adeadfed.com"
+#       role_arn = aws_iam_role.admin_role.arn
+#     }
+#   }
+# }
