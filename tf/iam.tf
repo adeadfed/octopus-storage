@@ -55,11 +55,12 @@ resource "aws_iam_policy" "cognito_ip_octopus_storage_policy" {
           "s3:PutObject",
           "s3:GetObject",
           "s3:ListBucket",
-          "s3:DeleteObject"
+          "s3:DeleteObject",
+          "s3:ListAllMyBuckets",
+          "s3:GetBucketLocation"
         ],
         "Resource" : [
-          aws_s3_bucket.octopus_storage_user_bucket.arn,
-          "arn:aws:s3:::*/*"
+          "*"
         ]
       }
     ]
