@@ -15,6 +15,10 @@ output "octopus_storage_web_url" {
   value = "https://${aws_cloudfront_distribution.octopus_storage_cloudfront.domain_name}"
 }
 
+output "octopus_admin_user_credentials" {
+  value = "${aws_cognito_user.username}:${aws_cognito_user.password}"
+}
+
 # output "octopus_user_pool_id" {
 #   value = aws_cognito_user_pool.octopus_user_pool.id
 # }

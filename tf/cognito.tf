@@ -9,6 +9,13 @@ resource "aws_cognito_user_pool" "octopus_user_pool" {
       priority = 1
     }
   }
+
+  schema {
+    name                = "isAdmin"
+    attribute_data_type = "String"
+    mutable             = true
+  }
+
   auto_verified_attributes = ["email"]
 
   alias_attributes = ["preferred_username", "email"]
@@ -77,6 +84,17 @@ resource "aws_cognito_identity_pool_roles_attachment" "storage_role" {
     identity_provider         = "${aws_cognito_user_pool.octopus_user_pool.endpoint}:${aws_cognito_user_pool_client.octopus_storage_client.id}"
     ambiguous_role_resolution = "AuthenticatedRole"
     type                      = "Token"
+  }
+}
+
+resource "aws_cognito_user" "octopus_admin_user" {
+  user_pool_id = aws_cognito_user_pool.octopus_user_pool.id
+  username     = "octopus_admin"
+  password     = "OctopusAdminPass123!"
+
+  attributes = {
+    isAdmin = "true"
+    email   = "admin@octopus-storage.com" 
   }
 }
 
