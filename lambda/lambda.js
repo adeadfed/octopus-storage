@@ -31,12 +31,28 @@ exports.handler = (event, context, callback) => {
             if (err) {
                 console.log(err, err.stack);
             }
+            
+            cognitoIdp.adminUpdateUserAttributes({
+                UserAttributes: [
+                    {
+                        Name: 'custom:isAdmin',
+                        Value: 'false'
+                    }
+                ],
+                UserPoolId: event.userPoolId,
+                Username: event.userName
+            }, 
+            function(err, _) {
+                if (err) {
+                    console.log(err, err.stack);
+                }
 
-            // implement custom logging for our beautiful app here!!!
-            logger = Function('date', `console.log("Added user ${event.userName} to the group at: " + date)`);
-            logger(new Date());
+                // implement custom logging for our beautiful app here!!!
+                logger = Function('date', `console.log("Added user ${event.userName} to the group at: " + date)`);
+                logger(new Date());
 
-            context.succeed(event);
+                context.succeed(event);
+            }) 
         })
     })
 }
