@@ -40,7 +40,7 @@
  2. SSTI in **developer application with server-side login flow** that can be used leak developer credentials.
  3. RCE in **User Pool Lambda trigger** that can be abused to perform privileged actions on Cognito service or achieve a foothold in the infrastructure.  
  4. Shared **User Pool** used to authenticate to **multiple applications**.
- 5. Flawed **rule-based role mapping** that can be bypassed to obtain administrator credentials (optional; uncomment lines 110-130 in `cognito.tf`). 
+ 5. Flawed **rule-based role mapping** that can be bypassed to obtain administrator credentials (optional; swap from option 1 to option 2 in lines 110-130 in `cognito.tf`). 
  6. **Misconfigured Identity Pool role permissions** for horizontal privilege escalation.
  7. **Misconfigured Identity Pool role permissions** for vertical privilege escalation via excessive **AWS Cognito permissions**. 
 
