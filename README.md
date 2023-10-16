@@ -38,9 +38,9 @@
 
 
 ## Authors
-Maksym Vatsyk
+- Maksym Vatsyk
     - [LinkedIn](https://www.linkedin.com/in/maksym-vatsyk/)
     - [Twitter](https://twitter.com/adeadfed)
-Pavel Shabarkin
+- Pavel Shabarkin
     - [LinkedIn](https://www.linkedin.com/in/pavelshabarkin/)
     - [Twitter](https://twitter.com/shabarkin)
