@@ -14,8 +14,8 @@ cd /opt
 wget https://github.com/adeadfed/octopus-storage/releases/download/auto-deploy/admin-app.tar.gz -O admin-app.tar.gz
 tar -xzvf admin-app.tar.gz --no-same-owner --no-same-permissions
 
-cd admin-app
-python3 -m pip install -r requirements.txt --break-system-packages
+cd /opt/admin-app
+python3 -m pip install -r requirements.txt
 
 mv admin_app.service /etc/systemd/system/
 systemctl restart admin_app
