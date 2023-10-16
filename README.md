@@ -20,10 +20,12 @@
  ```
  ubuntu@ubuntu:~$ terraform apply
  ...
- octopus_admin_ssh_key          = (sensitive value)
- octopus_admin_user_credentials = (sensitive value)
- octopus_admin_web_url          = "http://ec2-44-197-240-208.compute-1.amazonaws.com"
- octopus_storage_web_url        = "https://d3u9mncdgp32gv.cloudfront.net"
+ Outputs:
+
+ octopus_admin_ssh_key = <sensitive>
+ octopus_admin_user_credentials = <sensitive>
+ octopus_admin_web_url = "http://ec2-3-216-134-234.compute-1.amazonaws.com"
+ octopus_storage_web_url = "https://dba5mjvscqpjj.cloudfront.net"
  ```
 
 
