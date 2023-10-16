@@ -22,12 +22,18 @@
  ...
  Outputs:
 
- octopus_admin_ssh_key = <sensitive>
- octopus_admin_user_credentials = <sensitive>
- octopus_admin_web_url = "http://ec2-3-216-134-234.compute-1.amazonaws.com"
- octopus_storage_web_url = "https://dba5mjvscqpjj.cloudfront.net"
+ octopus_admin_ssh_key = <sensitive>                 
+ octopus_admin_user_credentials = <sensitive>        
+ octopus_admin_web_url = "http://EC2-PUBLIC-IP.compute-1.amazonaws.com"
+ octopus_storage_web_url = "https://CLOUDFRONT-ID.cloudfront.net"
  ```
-
+ 5. Sensitive terraform outputs
+ You can access sensitive outputs like so:
+ ```
+ terraform output -raw *output_name*
+ ```
+ `octopus_admin_ssh_key` can be used to access the EC2 running the Octopus Admin web app. <br>
+ `octopus_admin_user_credentials` can be used to log into `octopus_admin` User Pool user.
 
 ## Available Attack Vectors
  1. **Editable** custom User Pool attributes that lead to a privilege escalation (use Flask app in `user-pool-attributes-app/app.py`).
