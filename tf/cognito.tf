@@ -25,16 +25,20 @@ resource "aws_cognito_user_pool" "octopus_user_pool" {
   }
 }
 
-# user pool client for frontend & identity pool
+
+# user pool clients
 resource "aws_cognito_user_pool_client" "octopus_storage_client" {
   name = "Octopus Storage Client"
 
   user_pool_id = aws_cognito_user_pool.octopus_user_pool.id
 }
 
+resource "aws_cognito_user_pool_client" "attributes_app_client" {
+  name = "Attributes App Client"
 
+  user_pool_id = aws_cognito_user_pool.octopus_user_pool.id
+}
 
-# user pool backend client
 resource "aws_cognito_user_pool_client" "octopus_admin_client" {
   name         = "Octopus Admin Client"
   user_pool_id = aws_cognito_user_pool.octopus_user_pool.id
@@ -43,6 +47,7 @@ resource "aws_cognito_user_pool_client" "octopus_admin_client" {
 
   explicit_auth_flows = ["ALLOW_ADMIN_USER_PASSWORD_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
 }
+
 
 # user pool groups with IAM role assigned
 resource "aws_cognito_user_group" "aws_cognito_bad_practice_list_users_group" {
@@ -63,7 +68,21 @@ resource "aws_cognito_user_group" "aws_cognito_admin_group" {
   role_arn     = aws_iam_role.admin_role.arn
 }
 
-# identity pool
+
+# user pool admin user
+resource "aws_cognito_user" "octopus_admin_user" {
+  user_pool_id = aws_cognito_user_pool.octopus_user_pool.id
+  username     = "octopus_admin"
+  password     = "OctopusAdminPass123!"
+
+  attributes = {
+    isAdmin = "true"
+    email   = "admin@octopus-storage.com"
+  }
+}
+
+
+# OPTION 1: regular identity pool
 resource "aws_cognito_identity_pool" "octopus_identity_pool" {
   identity_pool_name               = "Octopus Identity Pool"
   allow_unauthenticated_identities = false
@@ -87,18 +106,8 @@ resource "aws_cognito_identity_pool_roles_attachment" "storage_role" {
   }
 }
 
-resource "aws_cognito_user" "octopus_admin_user" {
-  user_pool_id = aws_cognito_user_pool.octopus_user_pool.id
-  username     = "octopus_admin"
-  password     = "OctopusAdminPass123!"
 
-  attributes = {
-    isAdmin = "true"
-    email   = "admin@octopus-storage.com" 
-  }
-}
-
-# identity pool with rule based role mapping
+# OPTION 2: identity pool with rule based role mapping
 # resource "aws_cognito_identity_pool_roles_attachment" "storage_role" {
 #   identity_pool_id = aws_cognito_identity_pool.octopus_identity_pool.id
 

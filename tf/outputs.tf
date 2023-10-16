@@ -16,7 +16,7 @@ output "octopus_storage_web_url" {
 }
 
 output "octopus_admin_user_credentials" {
-  value = "${aws_cognito_user.octopus_admin_user.username}:${aws_cognito_user.octopus_admin_user.password}"
+  value     = "${aws_cognito_user.octopus_admin_user.username}:${aws_cognito_user.octopus_admin_user.password}"
   sensitive = true
 }
 

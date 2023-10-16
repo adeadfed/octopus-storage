@@ -51,7 +51,7 @@ resource "aws_instance" "octopus_admin_web_app_ec2" {
   # ami           = data.aws_ami.ubuntu.id
   ami           = "ami-0a0c8eebcdd6dcbd0" # Canonical, Ubuntu, 22.04 LTS, arm64 jammy image build on 2023-05-16
   instance_type = "t4g.nano"
-  user_data     = data.template_file.admin_userdata_config.rendered
+  user_data     = data.template_file.admin_userdata_config_template.rendered
   key_name      = aws_key_pair.octopus_admin_ssh_key.key_name
   tags = {
     Name = "octopus-admin-web-app-ec2-${random_id.tf_id.hex}"

@@ -43,9 +43,9 @@ resource "aws_s3_object" "octopus_storage_frontend_files" {
 resource "aws_s3_object" "octopus_storage_frontend_config" {
   bucket       = aws_s3_bucket.octopus_storage_frontend_bucket.bucket
   key          = "assets/js/config.js"
-  content      = data.template_file.frontend_js_config.rendered
+  content      = data.template_file.frontend_js_config_template.rendered
   content_type = "application/javascript"
-  etag         = md5(data.template_file.frontend_js_config.rendered)
+  etag         = md5(data.template_file.frontend_js_config_template.rendered)
 }
 
 # s3 bucket for users to store their data
