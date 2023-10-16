@@ -4,9 +4,9 @@ from jwt import PyJWKClient
 
 app = flask.Flask(__name__)
 
-aws_region = 'us-east-1'
-userpool_id = 'us-east-1_7sK8epCcM'
-userpool_client_id = '260te4kq53jp0ei0h710n7qlnd'
+aws_region = '${region_id}'
+userpool_id = '${user_pool_id}'
+userpool_client_id = '${user_pool_client_id}'
 
 jwks_url = f'https://cognito-idp.{aws_region}.amazonaws.com/{userpool_id}/.well-known/jwks.json'
 jwks_client = PyJWKClient(jwks_url)
